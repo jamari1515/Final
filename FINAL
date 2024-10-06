@@ -1,0 +1,91 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+
+class Student implements Comparable<Student> {
+    private String name;
+    private String address;
+    private double gpa;
+
+    public Student(String name, String address, double gpa) {
+        this.name = name;
+        this.address = address;
+        this.gpa = gpa;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public double getGPA() {
+        return gpa;
+    }
+
+    @Override
+    public int compareTo(Student other) {
+        return this.name.compareToIgnoreCase(other.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name + ", Address: " + address + ", GPA: " + gpa;
+    }
+}
+
+public class StudentDataProgram {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Student> students = new LinkedList<>();
+        String continueEntry = "y";
+
+        while (continueEntry.equalsIgnoreCase("y")) {
+             System.out.print("Enter student name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter student address: ");
+            String address = scanner.nextLine();
+            
+            double gpa = 0;
+            boolean validGPA = false;
+            while (!validGPA) {
+                System.out.print("Enter student GPA: ");
+                try {
+                    gpa = Double.parseDouble(scanner.nextLine());
+                    if (gpa >= 0.0 && gpa <= 4.0) {
+                        validGPA = true;
+                    } else {
+                        System.out.println("GPA must be between 0.0 and 4.0.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a numeric value for GPA.");
+                }
+            }
+
+             students.add(new Student(name, address, gpa));
+
+             System.out.print("Do you want to enter another student? (y/n): ");
+            continueEntry = scanner.nextLine();
+        }
+
+         Collections.sort(students);
+
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter("students.txt"))) {
+            for (Student student : students) {
+                writer.write(student.toString());
+                writer.newLine();
+            }
+            System.out.println("Student data has been written to students.txt.");
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+
+        scanner.close();
+    }
+}
